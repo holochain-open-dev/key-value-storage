@@ -1,0 +1,18 @@
+[package]
+authors = ["kristofer@fmckl.se"]
+edition = "2018"
+name = "storage"
+version = "0.0.1"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "storage"
+
+[dependencies]
+derive_more = "0"
+serde = "1"
+hc_utils = "0"
+hdk3 = "0"
+thiserror = "1.0.23"
+derive-new = "0.5.8"
+
