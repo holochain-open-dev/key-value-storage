@@ -5,14 +5,17 @@
 //!
 //! ## Multiple stores
 //! You can create multiples stores/"databases".
-//! There is no default store, create one before setting the first value using `create_store`.
+//! There is no default store, create one before setting the first value using [create_store].
+//!
+//! ## Limitations
+//! - Key values are currently [String] only.
 
 use error::StorageResult;
 use hdk3::prelude::*;
 
-mod entries;
-mod error;
-mod utils;
+pub mod entries;
+pub mod error;
+pub mod utils;
 
 use entries::item;
 use entries::store;
@@ -31,7 +34,8 @@ pub fn create_store(store_input: StoreInput) -> StorageResult<StoreWithHash> {
     store::handlers::create_store(store_input)
 }
 
-/// Returns store information, or `StorageError::StoreNotFound` if no store with the given name.
+/// Returns store information, or [error::StorageError::StoreNotFound] if no store with the given
+/// name.
 #[hdk_extern]
 pub fn get_store(store_input: StoreInput) -> StorageResult<StoreWithHash> {
     store::handlers::get_store(store_input)
@@ -46,8 +50,8 @@ pub fn set_item(item_input: ItemInput) -> StorageResult<ItemWithHash> {
     item::handlers::set_item(item_input)
 }
 
-/// Returns the current value associated with the given key, or `StorageError::ItemKeyNotFound` if
-/// the given key does not exist.
+/// Returns the current value associated with the given key, or
+/// [error::StorageError::ItemKeyNotFound] if the given key does not exist.
 #[hdk_extern]
 pub fn get_item(key_input: KeyInput) -> StorageResult<ItemWithHash> {
     item::handlers::get_item(key_input)

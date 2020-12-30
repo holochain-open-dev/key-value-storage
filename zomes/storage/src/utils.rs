@@ -1,3 +1,5 @@
+//! Utility functions
+
 use hdk3::prelude::*;
 
 pub fn error<T>(reason: &str) -> ExternResult<T> {

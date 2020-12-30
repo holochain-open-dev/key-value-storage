@@ -1,3 +1,5 @@
+//! General and more zome specific error types.
+
 use hdk3::prelude::*;
 
 #[derive(thiserror::Error, Debug)]
