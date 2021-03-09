@@ -1,13 +1,13 @@
 //! Utility functions
 
-use hdk3::prelude::*;
+use hdk::prelude::*;
 
 pub fn error<T>(reason: &str) -> ExternResult<T> {
     Err(err(reason))
 }
 
-pub fn err(reason: &str) -> HdkError {
-    HdkError::Wasm(WasmError::Zome(String::from(reason)))
+pub fn err(reason: &str) -> WasmError {
+    WasmError::Guest(String::from(reason))
 }
 
 pub fn try_get_and_convert<T: TryFrom<SerializedBytes>>(entry_hash: EntryHash) -> ExternResult<T> {
@@ -33,7 +33,7 @@ pub fn try_from_entry<T: TryFrom<SerializedBytes>>(entry: Entry) -> ExternResult
         _ => error("Could not convert entry"),
     }
 }
-#[derive(Serialize, Deserialize, SerializedBytes)]
+#[derive(Serialize, Deserialize, Debug, SerializedBytes)]
 struct StringLinkTag(String);
 pub fn link_tag(tag: &str) -> ExternResult<LinkTag> {
     let sb: SerializedBytes = StringLinkTag(tag.into()).try_into()?;

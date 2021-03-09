@@ -1,16 +1,15 @@
-use hdk3::prelude::*;
+use hdk::prelude::*;
 
 use hc_utils::WrappedEntryHash;
 
 use crate::{
-    error::{StorageError, StorageResult},
     store::{Store, StoreInput, StoreWithHash},
     utils,
 };
 
-pub fn create_store(store_input: StoreInput) -> StorageResult<StoreWithHash> {
+pub fn create_store(store_input: StoreInput) -> ExternResult<StoreWithHash> {
     match get_store(store_input.clone()) {
-        Ok(_) => return Err(StorageError::StoreAlreadyExists(store_input.store)),
+        Ok(_) => return utils::error(&format!("Store '{0}' already exists.", store_input.store)),
         _ => (),
     };
 
@@ -38,7 +37,7 @@ pub fn create_store(store_input: StoreInput) -> StorageResult<StoreWithHash> {
     Ok(result)
 }
 
-pub fn get_store(store_input: StoreInput) -> StorageResult<StoreWithHash> {
+pub fn get_store(store_input: StoreInput) -> ExternResult<StoreWithHash> {
     let agent_info = agent_info()?;
     let agent_address: AnyDhtHash = agent_info.agent_initial_pubkey.clone().into();
 
@@ -58,5 +57,5 @@ pub fn get_store(store_input: StoreInput) -> StorageResult<StoreWithHash> {
         }
     }
 
-    Err(StorageError::StoreNotFound(store_input.store))
+    utils::error(&format!("Store '{0}' not found.", store_input.store))
 }

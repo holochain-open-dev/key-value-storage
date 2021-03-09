@@ -1,16 +1,15 @@
-use hdk3::prelude::*;
+use hdk::prelude::*;
 
 use hc_utils::WrappedHeaderHash;
 
 use crate::{
-    error::{StorageError, StorageResult},
     item::{Item, ItemInput, ItemWithHash,KeyInput, IndexInput, KeyList, Key, Length},
     store,
     store::{StoreInput, StoreWithHash},
     utils,
 };
 
-pub fn set_item(item_input: ItemInput) -> StorageResult<ItemWithHash> {
+pub fn set_item(item_input: ItemInput) -> ExternResult<ItemWithHash> {
     // Get store or fail if it doesn't exist
     let store_with_hash: StoreWithHash =
         store::handlers::get_store(StoreInput::new(item_input.store.clone()))?;
@@ -43,7 +42,7 @@ pub fn set_item(item_input: ItemInput) -> StorageResult<ItemWithHash> {
 }
 
 
-pub fn get_item(key_input: KeyInput) -> StorageResult<ItemWithHash> {
+pub fn get_item(key_input: KeyInput) -> ExternResult<ItemWithHash> {
     // Get store or fail if it doesn't exist
     let store_with_hash: StoreWithHash =
         store::handlers::get_store(StoreInput::new(key_input.store))?;
@@ -64,11 +63,11 @@ pub fn get_item(key_input: KeyInput) -> StorageResult<ItemWithHash> {
             };
             Ok(result)
         }
-        None => Err(StorageError::ItemKeyNotFound(key_input.key)),
+        None => utils::error(&format!("Key '{0}' not found.", key_input.key)),
     }
 }
 
-pub fn length(store_input: StoreInput) -> StorageResult<Length> {
+pub fn length(store_input: StoreInput) -> ExternResult<Length> {
     // Get store or fail if it doesn't exist
     let store_with_hash: StoreWithHash = store::handlers::get_store(store_input)?;
 
@@ -79,7 +78,7 @@ pub fn length(store_input: StoreInput) -> StorageResult<Length> {
     ))
 }
 
-pub fn keys(store_input: StoreInput) -> StorageResult<KeyList> {
+pub fn keys(store_input: StoreInput) -> ExternResult<KeyList> {
     // Get store or fail if it doesn't exist
     let store_with_hash: StoreWithHash = store::handlers::get_store(store_input)?;
 
@@ -97,7 +96,7 @@ pub fn keys(store_input: StoreInput) -> StorageResult<KeyList> {
     Ok(keys.into())
 }
 
-pub fn key(index_input: IndexInput) -> StorageResult<Key> {
+pub fn key(index_input: IndexInput) -> ExternResult<Key> {
     // Get store or fail if it doesn't exist
     let store_with_hash: StoreWithHash = store::handlers::get_store(StoreInput::new(index_input.store))?;
 
@@ -106,7 +105,7 @@ pub fn key(index_input: IndexInput) -> StorageResult<Key> {
     Ok(Key::new(item.key))
 }
 
-pub fn remove_item(key_input: KeyInput) -> StorageResult<()> {
+pub fn remove_item(key_input: KeyInput) -> ExternResult<()> {
     // Get store or fail if it doesn't exist
     let store_with_hash: StoreWithHash =
         store::handlers::get_store(StoreInput::new(key_input.store.clone()))?;
@@ -127,7 +126,7 @@ pub fn remove_item(key_input: KeyInput) -> StorageResult<()> {
     Ok(())
 }
 
-pub fn clear(store_input: StoreInput) -> StorageResult<()> {
+pub fn clear(store_input: StoreInput) -> ExternResult<()> {
     // Get store or fail if it doesn't exist
     let store_with_hash: StoreWithHash =
         store::handlers::get_store(StoreInput::new(store_input.store.clone()))?;
