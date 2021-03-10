@@ -1,4 +1,4 @@
-✅ 2020-03-10, Compiled and tested on hdk 0.0.100.
+**⚠ 2020-03-10, Not working with hdk 0.0.100 yet ⚠**
 
 # Key-Value Storage
 
