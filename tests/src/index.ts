@@ -1,10 +1,14 @@
-import { Orchestrator, Config, InstallAgentsHapps } from "@holochain/tryorama";
+import { Orchestrator, Config, InstallAgentsHapps } from "tryorama";
 import path from "path";
 
 const conductorConfig = Config.gen();
 
 // Construct proper paths for your DNAs
-const storageDna = path.join(__dirname, "../../storage.dna.gz");
+const storageDna = path.join(
+  __dirname,
+  "../../storage.dna.workdir/key-value-storage.dna"
+);
+console.log("storageDna", storageDna);
 
 // create an InstallAgentsHapps array with your DNAs to tell tryorama what
 // to install into the conductor.
@@ -16,7 +20,8 @@ const installation: InstallAgentsHapps = [
   ],
 ];
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms));
+const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(() => resolve(true), ms));
 
 const orchestrator = new Orchestrator();
 
@@ -29,9 +34,13 @@ orchestrator.registerScenario("create an entry and get it", async (s, t) => {
 
   // 🌈
   // Create store1
-  let store1 = await alice_common.cells[0].call("storage", "create_store", {
-    store: "store1",
-  });
+  let store1 = await alice_common.cells[0].call(
+    "key-value-storage",
+    "create_store",
+    {
+      store: "store1",
+    }
+  );
   t.ok(store1, `create_store 1 : ${JSON.stringify(store1, undefined, 2)}`);
   await sleep(500);
 

@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "CARGO_TARGET_DIR=../target cargo build --release --target wasm32-unknown-unknown && dna-util -c ../storage.dna.workdir",
-    "test": "CARGO_TARGET_DIR=../target cargo build --release --target wasm32-unknown-unknown && dna-util -c ../storage.dna.workdir && TRYORAMA_LOG_LEVEL=info RUST_LOG_LEVEL=debug RUST_BACKTRACE=1 TRYORAMA_HOLOCHAIN_PATH=\"holochain\" ts-node src/index.ts"
+    "build": "CARGO_TARGET_DIR=../target cargo build --release --target wasm32-unknown-unknown",
+    "package": "hc dna pack ../storage.dna.workdir",
+    "test": "npm run build && npm run package && TRYORAMA_LOG_LEVEL=debug WASM_LOG=debug RUST_LOG=error RUST_BACKTRACE=1 TRYORAMA_HOLOCHAIN_PATH=\"holochain\" ts-node src/index.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@holochain/tryorama": "0.4.0-dev.1",
-    "@msgpack/msgpack": "^2.3.0",
+    "tryorama": "github:holochain/tryorama#develop",
     "@types/lodash": "^4.14.158",
     "@types/node": "^14.0.14",
     "lodash": "^4.17.19",
