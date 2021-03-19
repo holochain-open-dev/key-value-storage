@@ -50,6 +50,7 @@ orchestrator.registerScenario("create an entry and get it", async (s, t) => {
     getStore1,
     `get_store 1 : ${JSON.stringify(getStore1, undefined, 2)}`
   );
+
   // 🌈
   // Create store1 - ALREADY EXISTS
   try {
@@ -59,6 +60,28 @@ orchestrator.registerScenario("create an entry and get it", async (s, t) => {
     t.fail("Function should throw exeption");
   } catch (e) {
     t.ok(e, "Exeption thrown as expected, store already exists");
+  }
+
+  // 🌈
+  // Create store1 - NO NAME
+  try {
+    await alice_common.cells[0].call("storage", "create_store", {
+      store: "",
+    });
+    t.fail("Function should throw exeption");
+  } catch (e) {
+    t.ok(e, "Exeption thrown as expected, empty name not allowed");
+  }
+
+  // 🌈
+  // Create store1 - TOO LONG NAME
+  try {
+    await alice_common.cells[0].call("storage", "create_store", {
+      store: "12345678901234567890123456789012345678901234567890X",
+    });
+    t.fail("Function should throw exeption");
+  } catch (e) {
+    t.ok(e, "Exeption thrown as expected, max 50 characters in name");
   }
 
   // 🌈
@@ -91,6 +114,59 @@ orchestrator.registerScenario("create an entry and get it", async (s, t) => {
     t.fail("Function should throw exeption");
   } catch (e) {
     t.ok(e, "Exeption thrown as expected, store doesn't exist");
+  }
+
+  // 🌈
+  // Set item - KEY TOO SHORT
+  try {
+    await alice_common.cells[0].call("storage", "set_item", {
+      store: "store1",
+      key: "",
+      value: "value1",
+    });
+    t.fail("Function should throw exeption");
+  } catch (e) {
+    t.ok(e, "Exeption thrown as expected, key too short");
+  }
+
+  // 🌈
+  // Set item - KEY TOO LONG
+  try {
+    await alice_common.cells[0].call("storage", "set_item", {
+      store: "store1",
+      key: "12345678901234567890123456789012345678901234567890X",
+      value: "value1",
+    });
+    t.fail("Function should throw exeption");
+  } catch (e) {
+    t.ok(e, "Exeption thrown as expected, key too long");
+  }
+
+  // 🌈
+  // Set item - VALUE TOO SHORT
+  try {
+    await alice_common.cells[0].call("storage", "set_item", {
+      store: "store1",
+      key: "key1",
+      value: "",
+    });
+    t.fail("Function should throw exeption");
+  } catch (e) {
+    t.ok(e, "Exeption thrown as expected, value too short");
+  }
+
+  // 🌈
+  // Set item - VALUE TOO LONG
+  try {
+    await alice_common.cells[0].call("storage", "set_item", {
+      store: "store1",
+      key: "key1",
+      value:
+        "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
+    });
+    t.fail("Function should throw exeption");
+  } catch (e) {
+    t.ok(e, "Exeption thrown as expected, value too long");
   }
 
   // 🌈

@@ -18,20 +18,16 @@ pub mod utils;
 use entries::item;
 use entries::store;
 
-use store::{StoreInput, StoreWithHash};
-use item::{ItemInput, ItemWithHash, KeyInput, IndexInput, KeyList, Key, Length};
+use item::*;
+use store::*;
 
 entry_defs![store::Store::entry_def(), item::Item::entry_def()];
 
 #[macro_use]
 extern crate derive_new;
 
-/// Currently returns `Valid` on all calls.
 #[hdk_extern]
-fn validate(
-    _data: ValidateData,
-) -> ExternResult<ValidateCallbackResult> {
-
+fn validate(_data: ValidateData) -> ExternResult<ValidateCallbackResult> {
     Ok(ValidateCallbackResult::Valid)
 }
 

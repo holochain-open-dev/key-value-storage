@@ -2,10 +2,34 @@ use hdk::prelude::*;
 
 use hc_utils::WrappedEntryHash;
 
-use crate::{
-    store::{Store, StoreInput, StoreWithHash},
-    utils,
-};
+use crate::{store::*, utils};
+
+#[hdk_extern]
+fn validate_create_entry_store(
+    validation_data: ValidateData,
+) -> ExternResult<ValidateCallbackResult> {
+    let element = validation_data.element;
+    let store = match element.entry().to_app_option::<Store>() {
+        Ok(Some(store)) => store,
+        _ => {
+            return Ok(ValidateCallbackResult::Invalid(
+                "Not a store object.".to_string(),
+            ))
+        }
+    };
+
+    // Check store name length > 0 <= 50
+    let result = match store.name.len() {
+        len if len == 0 => {
+            ValidateCallbackResult::Invalid("Min store name length is 1.".to_string())
+        }
+        len if len > 50 => {
+            ValidateCallbackResult::Invalid("Max store name length is 50.".to_string())
+        }
+        _ => ValidateCallbackResult::Valid,
+    };
+    Ok(result)
+}
 
 pub fn create_store(store_input: StoreInput) -> ExternResult<StoreWithHash> {
     match get_store(store_input.clone()) {

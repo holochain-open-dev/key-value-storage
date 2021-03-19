@@ -2,17 +2,48 @@ use hdk::prelude::*;
 
 use hc_utils::WrappedHeaderHash;
 
-use crate::{
-    item::{Item, ItemInput, ItemWithHash,KeyInput, IndexInput, KeyList, Key, Length},
-    store,
-    store::{StoreInput, StoreWithHash},
-    utils,
-};
+use crate::{item::*, store::handlers::*, store::*, utils};
+
+#[hdk_extern]
+fn validate_create_entry_item(
+    validation_data: ValidateData,
+) -> ExternResult<ValidateCallbackResult> {
+    let element = validation_data.element;
+    let item = match element.entry().to_app_option::<Item>() {
+        Ok(Some(item)) => item,
+        _ => {
+            return Ok(ValidateCallbackResult::Invalid(
+                "Not an item object.".to_string(),
+            ))
+        }
+    };
+
+    // Check item name length > 0 <= 50
+    match item.key.len() {
+        len if len == 0 => {
+            return Ok(ValidateCallbackResult::Invalid("Min key length is 1.".to_string()))
+        }
+        len if len > 50 => {
+            return Ok(ValidateCallbackResult::Invalid("Max key length is 50.".to_string()))
+        }
+        _ => ()
+    };
+
+    // Check item name length > 0 <= 255
+    match item.value.len() {
+        len if len == 0 => {
+            return Ok(ValidateCallbackResult::Invalid("Min value length is 1.".to_string()))
+        }
+        len if len > 256 => {
+            return Ok(ValidateCallbackResult::Invalid("Max value length is 255.".to_string()))
+        }
+        _ => return Ok(ValidateCallbackResult::Valid),
+    };
+}
 
 pub fn set_item(item_input: ItemInput) -> ExternResult<ItemWithHash> {
     // Get store or fail if it doesn't exist
-    let store_with_hash: StoreWithHash =
-        store::handlers::get_store(StoreInput::new(item_input.store.clone()))?;
+    let store_with_hash: StoreWithHash = get_store(StoreInput::new(item_input.store.clone()))?;
 
     // Remove old item if exists
     remove_item(KeyInput::new(
@@ -41,11 +72,9 @@ pub fn set_item(item_input: ItemInput) -> ExternResult<ItemWithHash> {
     Ok(result)
 }
 
-
 pub fn get_item(key_input: KeyInput) -> ExternResult<ItemWithHash> {
     // Get store or fail if it doesn't exist
-    let store_with_hash: StoreWithHash =
-        store::handlers::get_store(StoreInput::new(key_input.store))?;
+    let store_with_hash: StoreWithHash = get_store(StoreInput::new(key_input.store))?;
 
     let links = get_links(
         store_with_hash.store_hash.0,
@@ -69,7 +98,7 @@ pub fn get_item(key_input: KeyInput) -> ExternResult<ItemWithHash> {
 
 pub fn length(store_input: StoreInput) -> ExternResult<Length> {
     // Get store or fail if it doesn't exist
-    let store_with_hash: StoreWithHash = store::handlers::get_store(store_input)?;
+    let store_with_hash: StoreWithHash = get_store(store_input)?;
 
     Ok(Length::new(
         get_links(store_with_hash.store_hash.0, None)?
@@ -80,7 +109,7 @@ pub fn length(store_input: StoreInput) -> ExternResult<Length> {
 
 pub fn keys(store_input: StoreInput) -> ExternResult<KeyList> {
     // Get store or fail if it doesn't exist
-    let store_with_hash: StoreWithHash = store::handlers::get_store(store_input)?;
+    let store_with_hash: StoreWithHash = get_store(store_input)?;
 
     let links_iter = get_links(store_with_hash.store_hash.0, None)?
         .into_inner()
@@ -98,7 +127,7 @@ pub fn keys(store_input: StoreInput) -> ExternResult<KeyList> {
 
 pub fn key(index_input: IndexInput) -> ExternResult<Key> {
     // Get store or fail if it doesn't exist
-    let store_with_hash: StoreWithHash = store::handlers::get_store(StoreInput::new(index_input.store))?;
+    let store_with_hash: StoreWithHash = get_store(StoreInput::new(index_input.store))?;
 
     let link = &get_links(store_with_hash.store_hash.0, None)?.into_inner()[index_input.index];
     let item: Item = utils::try_get_and_convert(link.target.clone())?;
@@ -107,8 +136,7 @@ pub fn key(index_input: IndexInput) -> ExternResult<Key> {
 
 pub fn remove_item(key_input: KeyInput) -> ExternResult<()> {
     // Get store or fail if it doesn't exist
-    let store_with_hash: StoreWithHash =
-        store::handlers::get_store(StoreInput::new(key_input.store.clone()))?;
+    let store_with_hash: StoreWithHash = get_store(StoreInput::new(key_input.store.clone()))?;
 
     if let Ok(old_item) = get_item(key_input.clone()) {
         let links = get_links(
@@ -128,8 +156,7 @@ pub fn remove_item(key_input: KeyInput) -> ExternResult<()> {
 
 pub fn clear(store_input: StoreInput) -> ExternResult<()> {
     // Get store or fail if it doesn't exist
-    let store_with_hash: StoreWithHash =
-        store::handlers::get_store(StoreInput::new(store_input.store.clone()))?;
+    let store_with_hash: StoreWithHash = get_store(StoreInput::new(store_input.store.clone()))?;
 
     let links_iter = get_links(store_with_hash.store_hash.0, None)?
         .into_inner()

@@ -3,7 +3,11 @@ use hdk::prelude::*;
 
 pub mod handlers;
 
-#[hdk_entry(id = "item", visibility = "public")]
+#[hdk_entry(
+    id = "item",
+    required_validations = 5,
+    visibility = "private"
+)]
 #[serde(rename_all = "camelCase")]
 #[derive(Clone)]
 pub struct Item {
@@ -36,7 +40,6 @@ pub struct IndexInput {
     pub store: String,
     pub index: usize,
 }
-
 
 #[derive(Serialize, Deserialize, Debug, derive_more::From)]
 pub struct KeyList {

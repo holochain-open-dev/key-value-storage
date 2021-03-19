@@ -3,7 +3,11 @@ use hdk::prelude::*;
 
 pub mod handlers;
 
-#[hdk_entry(id = "store", visibility = "public")]
+#[hdk_entry(
+    id = "store",
+    required_validations = 5,
+    visibility = "private"
+)]
 #[serde(rename_all = "camelCase")]
 #[derive(Clone)]
 pub struct Store {
@@ -21,4 +25,3 @@ pub struct StoreWithHash {
 pub struct StoreInput {
     pub store: String,
 }
-
