@@ -10,7 +10,7 @@ name = "storage"
 
 [dependencies]
 hc_utils = "0"
-hdk = "0.0.100"
+hdk = "=0.0.100"
 derive_more = "0"
 serde = "1"
 thiserror = "1.0.23"

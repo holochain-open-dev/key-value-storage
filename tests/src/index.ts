@@ -1,4 +1,4 @@
-import { Orchestrator, Config, InstallAgentsHapps } from "tryorama";
+import { Orchestrator, Config, InstallAgentsHapps } from "@holochain/tryorama";
 import path from "path";
 
 const conductorConfig = Config.gen();
@@ -34,13 +34,9 @@ orchestrator.registerScenario("create an entry and get it", async (s, t) => {
 
   // 🌈
   // Create store1
-  let store1 = await alice_common.cells[0].call(
-    "key-value-storage",
-    "create_store",
-    {
-      store: "store1",
-    }
-  );
+  let store1 = await alice_common.cells[0].call("storage", "create_store", {
+    store: "store1",
+  });
   t.ok(store1, `create_store 1 : ${JSON.stringify(store1, undefined, 2)}`);
   await sleep(500);
 

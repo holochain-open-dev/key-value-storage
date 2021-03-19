@@ -26,6 +26,15 @@ entry_defs![store::Store::entry_def(), item::Item::entry_def()];
 #[macro_use]
 extern crate derive_new;
 
+/// Currently returns `Valid` on all calls.
+#[hdk_extern]
+fn validate(
+    _data: ValidateData,
+) -> ExternResult<ValidateCallbackResult> {
+
+    Ok(ValidateCallbackResult::Valid)
+}
+
 /// Creates a named key/value store.
 #[hdk_extern]
 pub fn create_store(store_input: StoreInput) -> ExternResult<StoreWithHash> {
